@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<infotexts language="Simplified Chinese" translatedname="中文(简体)" nowhitespace="false">
+    <Override>
+        <afflictiondescription.tsmmission_eyi_72_76_Override>在此阶段，你将获得200%眩晕抗性</afflictiondescription.tsmmission_eyi_72_76_Override>
+        <entityname.Touhou_Zero_Moment_Pendant>零点时刻项链</entityname.Touhou_Zero_Moment_Pendant>
+        <entitydescription.Touhou_Zero_Moment_Pendant>在零点，时间像指环般收拢；被抹去的刻度沉睡在金环里。佩戴者身上的负重（携带物品数量）越少，项链提供更多的伤害加成</entitydescription.Touhou_Zero_Moment_Pendant>
+        <afflictionname.Touhou_Zero_Moment_Pendant_Hook_tier1>零点时刻</afflictionname.Touhou_Zero_Moment_Pendant_Hook_tier1>
+        <afflictionname.Touhou_Zero_Moment_Pendant_Hook_tier2>零点时刻</afflictionname.Touhou_Zero_Moment_Pendant_Hook_tier2>
+        <afflictionname.Touhou_Zero_Moment_Pendant_Hook_tier3>零点时刻</afflictionname.Touhou_Zero_Moment_Pendant_Hook_tier3>
+        <afflictionname.Touhou_Zero_Moment_Pendant_Hook_tier4>零点时刻</afflictionname.Touhou_Zero_Moment_Pendant_Hook_tier4>
+        <afflictionname.Touhou_Zero_Moment_Pendant_Hook_tier5>零点时刻</afflictionname.Touhou_Zero_Moment_Pendant_Hook_tier5>
+        <afflictiondescription.Touhou_Zero_Moment_Pendant_Hook_tier1>增加20%攻击伤害</afflictiondescription.Touhou_Zero_Moment_Pendant_Hook_tier1>
+        <afflictiondescription.Touhou_Zero_Moment_Pendant_Hook_tier2>增加15%攻击伤害</afflictiondescription.Touhou_Zero_Moment_Pendant_Hook_tier2>
+        <afflictiondescription.Touhou_Zero_Moment_Pendant_Hook_tier3>增加10%攻击伤害</afflictiondescription.Touhou_Zero_Moment_Pendant_Hook_tier3>
+        <afflictiondescription.Touhou_Zero_Moment_Pendant_Hook_tier4>增加5%攻击伤害</afflictiondescription.Touhou_Zero_Moment_Pendant_Hook_tier4>
+        <afflictiondescription.Touhou_Zero_Moment_Pendant_Hook_tier5>增加0%攻击伤害</afflictiondescription.Touhou_Zero_Moment_Pendant_Hook_tier5>
+    </Override>
+</infotexts>

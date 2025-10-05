@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Override>
+    <Items>
+
+        <!--零点时刻项链-->
+        <Item name="零点时刻项链" identifier="Touhou_Zero_Moment_Pendant" tags="smallitem,mobileradio"
+              subcategory="Touhou" category="Equipment" allowasextracargo="true"
+              cargocontaineridentifier="metalcrate" maxstacksize="1" scale="0.15">
+            <PreferredContainer primary="medcab"/>
+            <Price baseprice="3000" sold="false">
+                <Price storeidentifier="merchantoutpost" minavailable="8"/>
+                <Price storeidentifier="merchantcity" minavailable="8"/>
+                <Price storeidentifier="merchantresearch" minavailable="8"/>
+                <Price storeidentifier="merchantmilitary" minavailable="8"/>
+                <Price storeidentifier="merchantmine" minavailable="8"/>
+                <Price storeidentifier="Merchant_Kawasiro_Nitori" multiplier="0.7" sold="true" maxavailable="1"/>
+            </Price>
+            <Sprite texture="%ModDir%/Images/Touhou_Zero_Moment_Pendant.png" sourcerect="0,0,151,200" depth="0.6" origin="0.5,0.5"/>
+            <Body width="48" height="48" density="10"/>
+            <Holdable slots="Any,RightHand+LeftHand" msg="ItemMsgPickUpSelect">
+                <StatusEffect type="OnBroken" target="This">
+                    <Remove/>
+                </StatusEffect>
+            </Holdable>
+            <Deconstruct time="1" />
+            <Fabricate suitablefabricators="Magic_Altar" requiredtime="10">
+                <RequiredSkill identifier="Touhou_Magic" level="30"/>
+                <RequiredItem identifier="Seven_Elements_Alchemical_Fake"/>
+                <RequiredItem identifier="organicfiber"/>
+                <RequiredItem identifier="Touhou_Plant_Extract"/>
+            </Fabricate>
+            <WifiComponent range="65000.0" LinkToChat="true" MinChatMessageInterval="0.0"/>
+            <Wearable limbtype="Head" slots="Any,Headset" msg="ItemMsgPickUpSelect">
+                <sprite name="Headset Wearable" texture="%ModDir:2941124988%/Images/Divinggear/Yin_Yang_Orb_0.png" sourcerect="32,32,32,32" limb="Head"
+                        hidelimb="false" inheritlimbdepth="true" inheritscale="true" ignorelimbscale="true" scale="0.7" hideotherwearables="false"
+                        origin="0.5,0.5"/>
+                <StatusEffect type="OnWearing" target="Character" Interval="15.0" disabledeltatime="true">
+                    <LuaHook name="Touhou_Zero_Moment_Pendant_Hook"/>
+                </StatusEffect>
+                <StatusEffect type="OnWearing" target="This,Character" Condition="-0.01" Interval="1.0" disabledeltatime="true">
+                    <Conditional HealthPercentage="lte 85"/>
+                </StatusEffect>
+            </Wearable>
+        </Item>
+
+    </Items>
+</Override>

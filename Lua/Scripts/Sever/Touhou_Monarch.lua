@@ -26,7 +26,14 @@ Hook.Patch("Barotrauma.Items.Components.Projectile", "Shoot", function(instance,
         last_harpoon[weapon] = item
 
     elseif last_harpoon[weapon] ~= nil and not last_harpoon[weapon].Removed then  -- is round02
-        table.insert(active_rounds, {instance.Item, last_harpoon[weapon]})
+--[[         table.insert(active_rounds, {instance.Item, last_harpoon[weapon]}) ]]
+        local round02 = instance.Item
+        local round01 = last_harpoon[weapon]
+
+        Timer.Wait(function()
+            if round02.Removed or round01.Removed then return end
+            table.insert(active_rounds, {round02, round01})
+        end, 200)
     end
 end)
 
