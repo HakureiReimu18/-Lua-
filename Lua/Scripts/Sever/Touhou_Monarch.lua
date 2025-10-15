@@ -33,7 +33,7 @@ Hook.Patch("Barotrauma.Items.Components.Projectile", "Shoot", function(instance,
         Timer.Wait(function()
             if round02.Removed or round01.Removed then return end
             table.insert(active_rounds, {round02, round01})
-        end, 200)
+        end, 100)
     end
 end)
 

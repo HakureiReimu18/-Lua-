@@ -7,11 +7,12 @@ TLE.Path = table.pack(...)[1]
 --[[dofile(TLE.Path.."/Lua/Scripts/Sever/Touhou_Hisoutensoku_Amor.lua")]]
 
 if Game.IsSingleplayer or SERVER then
---[[ 	dofile(Touhou.Path .. "/Lua/Scripts/Server/cook.lua") ]]
-	dofile(TLE.Path.."/Lua/Scripts/Sever/Touhou_Monarch.lua")
-	dofile(TLE.Path.."/Lua/Scripts/Sever/Touhou_Monorail.lua")
-	dofile(TLE.Path.."/Lua/Scripts/Sever/Touhou_Zero_Moment_Pendant.lua")
+    --[[     dofile(Touhou.Path .. "/Lua/Scripts/Server/cook.lua") ]]
+    dofile(TLE.Path .. "/Lua/Scripts/Sever/Touhou_Monarch.lua")
+    dofile(TLE.Path .. "/Lua/Scripts/Sever/Touhou_Zero_Moment_Pendant.lua")
 end
+
+	dofile(TLE.Path.."/Lua/Scripts/Sever/Touhou_Monorail.lua")
 
 --[[ if CLIENT then
 	Timer.Wait(function()

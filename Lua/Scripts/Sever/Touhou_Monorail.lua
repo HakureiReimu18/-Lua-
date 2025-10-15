@@ -15,7 +15,7 @@ Hook.Add("Touhou_Monorail_aiming", "Touhou_Monorail_aiming", function(effect, de
     local rangedWeapon = targets[2]
     local user = targets[3]
     if rangedWeapon.ReloadTimer > 0 then return end -- don't charge while reloading
-    if user.IsKeyDown(InputType.Shoot) then -- starts charging
+    if user.IsKeyDown(InputType.Shoot) then         -- starts charging
         if item.Condition == 101 then
             item.Condition = 1
         elseif item.Condition < 100 then -- still charging
@@ -23,7 +23,8 @@ Hook.Add("Touhou_Monorail_aiming", "Touhou_Monorail_aiming", function(effect, de
         end
     elseif item.Condition < 101 then
         if isHolding(user, item) then -- shoot
-            rangedWeapon.WeaponDamageModifier = MIN_DAMAGE_MULTIPLIER + (MAX_DAMAGE_MULTIPLIER - MIN_DAMAGE_MULTIPLIER) * (item.Condition / 100)
+            rangedWeapon.WeaponDamageModifier = MIN_DAMAGE_MULTIPLIER +
+            (MAX_DAMAGE_MULTIPLIER - MIN_DAMAGE_MULTIPLIER) * (item.Condition / 100)
             rangedWeapon.use(deltaTime, user)
         end
         item.Condition = 101
