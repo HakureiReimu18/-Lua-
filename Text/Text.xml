@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <infotexts language="Simplified Chinese" translatedname="中文(简体)" nowhitespace="false">
     <Override>
-        <afflictiondescription.tsmmission_eyi_72_76_Override>在此阶段，你将获得200%眩晕抗性</afflictiondescription.tsmmission_eyi_72_76_Override>
         <entityname.Touhou_Monarch>君王</entityname.Touhou_Monarch>
         <entitydescription.Touhou_Monarch>相传，有一位执政者愿放弃一切，将自己的信仰铸入这把枪中。枪身刻满古老的铭文，每一道刻痕都映着王权的辉光与枯萎。人们曾将它遗忘在废墟之上。重见天日时，君王已被黑暗洗礼——它不问出身，不畏威严，只守威权。
             开启改装后，君王的下一次射击将发射定位鱼叉，鱼叉存在期间，追踪弹匣的追踪弹幕会追踪鱼叉的方向进行射击。
@@ -28,5 +27,8 @@
         <afflictiondescription.Touhou_Zero_Moment_Pendant_Hook_tier3>增加10%攻击伤害</afflictiondescription.Touhou_Zero_Moment_Pendant_Hook_tier3>
         <afflictiondescription.Touhou_Zero_Moment_Pendant_Hook_tier4>增加5%攻击伤害</afflictiondescription.Touhou_Zero_Moment_Pendant_Hook_tier4>
         <afflictiondescription.Touhou_Zero_Moment_Pendant_Hook_tier5>增加0%攻击伤害</afflictiondescription.Touhou_Zero_Moment_Pendant_Hook_tier5>
+
+        <entityname.Touhou_Renamer>命名工具</entityname.Touhou_Renamer>
+        <entitydescription.Touhou_Renamer>重新命名一个物品。需要安装在潜艇上使用（右键+E键安装）</entitydescription.Touhou_Renamer>
     </Override>
 </infotexts>

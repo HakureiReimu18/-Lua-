@@ -12,6 +12,8 @@ if Game.IsSingleplayer or SERVER then
     dofile(TLE.Path .. "/Lua/Scripts/Sever/Touhou_Zero_Moment_Pendant.lua")
 end
 
+	dofile(TLE.Path.."/Lua/Scripts/Client/Touhou_Cam_Offset.lua")
+	dofile(TLE.Path.."/Lua/Scripts/Sever/Touhou_Renamer.lua")
 	dofile(TLE.Path.."/Lua/Scripts/Sever/Touhou_Monorail.lua")
 
 --[[ if CLIENT then
