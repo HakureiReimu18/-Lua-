@@ -4,7 +4,7 @@ local MAX_MAGIC_SKILL = 300
 -- 非线性曲线强度：数值越大，前后段增幅越明显，中段越平缓
 local CURVE_WOBBLE = 0.15
 -- 调试开关：为 true 时输出无法解析攻击者的原因
-local DEBUG_LOG = false
+local DEBUG_LOG = true
 
 local WEAPON_LEVELS = {
     {
@@ -79,13 +79,27 @@ local function resolve_magic_weapon_config(character)
     -- 2) 双手拿着同一把魔法武器（双手武器通常会占用左右手同一物品实例）。
     -- 不满足上述条件，则不给加成。
     local right_hand, left_hand = get_hand_items(character)
-    if right_hand == nil or left_hand == nil then
+    if right_hand == nil and left_hand == nil then
         return nil
     end
 
     -- 如果左右手是同一把武器，且它是魔法武器，则允许加成
-    if right_hand == left_hand then
+    if right_hand ~= nil and right_hand == left_hand then
         return get_weapon_level_config(right_hand)
+    end
+
+    -- 如果只握持一把双手武器（另一只手为空），也允许加成
+    if right_hand ~= nil and left_hand == nil then
+        if item_requires_both_hands(right_hand) then
+            return get_weapon_level_config(right_hand)
+        end
+        return nil
+    end
+    if left_hand ~= nil and right_hand == nil then
+        if item_requires_both_hands(left_hand) then
+            return get_weapon_level_config(left_hand)
+        end
+        return nil
     end
 
     -- 如果左右手是不同的武器，则两把都必须是魔法武器
@@ -130,6 +144,40 @@ local function resolve_attacker_from_source(source)
     end
 
     return source
+end
+
+local function safe_get_prefab_field(item, field_name)
+    if item == nil or item.Prefab == nil then
+        return nil
+    end
+
+    local ok, value = pcall(function()
+        return item.Prefab[field_name]
+    end)
+    if not ok then
+        return nil
+    end
+    return value
+end
+
+local function item_requires_both_hands(item)
+    -- 不同版本可能使用不同字段名，这里做兼容读取
+    local requires = safe_get_prefab_field(item, "RequiresBothHands")
+    if requires ~= nil then
+        return requires
+    end
+
+    requires = safe_get_prefab_field(item, "RequireBothHands")
+    if requires ~= nil then
+        return requires
+    end
+
+    requires = safe_get_prefab_field(item, "TwoHanded")
+    if requires ~= nil then
+        return requires
+    end
+
+    return false
 end
 
 local function get_attacker_character(attackResult)
