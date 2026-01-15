@@ -203,7 +203,7 @@
             <LightComponent LightColor="220,200,80,200" Range="50" powerconsumption="0" IsOn="true">
                 <sprite texture="%ModDir%/Images/Touhou_Monarch.png" sourcerect="110,105,1,1" origin="0.5,0.5"/>
             </LightComponent>
-            <Projectile characterusable="false" launchimpulse="15" sticktocharacters="true" sticktolighttargets="true">
+            <Projectile characterusable="false" launchimpulse="15" sticktocharacters="true" sticktolighttargets="true" DoesStick="true">
                 <ParticleEmitter particle="tracerfirearm" particleamount="1" velocitymin="0" velocitymax="0" colormultiplier="55,150,55,205"
                                  scalemultiplier="1,1.2"/>
                 <Attack itemdamage="5" severlimbsprobability="0.25" penetration="0.1">
