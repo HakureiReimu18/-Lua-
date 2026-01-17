@@ -10,7 +10,8 @@ if Game.IsSingleplayer or SERVER then
     --[[     dofile(Touhou.Path .. "/Lua/Scripts/Server/cook.lua") ]]
     dofile(TLE.Path .. "/Lua/Scripts/Sever/Touhou_Monarch.lua")
     dofile(TLE.Path .. "/Lua/Scripts/Sever/Touhou_Zero_Moment_Pendant.lua")
-        dofile(TLE.Path .. "/Lua/Scripts/Sever/Touhou_Magic_Weapon_Bonus.lua")
+    dofile(TLE.Path .. "/Lua/Scripts/Sever/Touhou_Magic_Weapon_Bonus.lua")
+    dofile(TLE.Path .. "/Lua/Scripts/Sever/Touhou_Magic_Weapon_Skill_Gain.lua")
 end
 
 	dofile(TLE.Path.."/Lua/Scripts/Client/Touhou_Cam_Offset.lua")

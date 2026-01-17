@@ -4,20 +4,20 @@ local MAX_MAGIC_SKILL = 300
 -- 非线性曲线强度：数值越大，前后段增幅越明显，中段越平缓
 local CURVE_WOBBLE = 0.15
 -- 调试开关：为 true 时输出无法解析攻击者的原因
-local DEBUG_LOG = true
+local DEBUG_LOG = false
 
 local WEAPON_LEVELS = {
     {
         tag = "Touhou_Weapon_Level05",
-        max_bonus = 0.2,
-    },
-    {
-        tag = "Touhou_Weapon_Level04",
         max_bonus = 0.15,
     },
     {
-        tag = "Touhou_Weapon_Level03",
+        tag = "Touhou_Weapon_Level04",
         max_bonus = 0.1,
+    },
+    {
+        tag = "Touhou_Weapon_Level03",
+        max_bonus = 0.15,
     },
     {
         tag = "Touhou_Weapon_Level02",
@@ -25,7 +25,7 @@ local WEAPON_LEVELS = {
     },
     {
         tag = "Touhou_Weapon_Level01",
-        max_bonus = 0.1,
+        max_bonus = 0.15,
     },
 }
 
@@ -73,197 +73,100 @@ local function get_weapon_level_config(item)
     return nil
 end
 
-local function resolve_magic_weapon_config(character)
-    -- 规则：
-    -- 1) 双手必须都是“魔法武器”；或
-    -- 2) 双手拿着同一把魔法武器（双手武器通常会占用左右手同一物品实例）。
-    -- 不满足上述条件，则不给加成。
+local function resolve_magic_weapon_config(character, attack)
+    if attack ~= nil then
+        local source_item = attack.SourceItem
+        if source_item ~= nil then
+            local source_config = get_weapon_level_config(source_item)
+            if source_config ~= nil then
+                return source_config
+            end
+
+            local projectile_component = source_item.GetComponentString("Projectile")
+            if projectile_component ~= nil and projectile_component.Launcher ~= nil then
+                local launcher_config = get_weapon_level_config(projectile_component.Launcher)
+                if launcher_config ~= nil then
+                    return launcher_config
+                end
+            end
+        end
+    end
+
     local right_hand, left_hand = get_hand_items(character)
-    if right_hand == nil and left_hand == nil then
-        return nil
-    end
-
-    -- 如果左右手是同一把武器，且它是魔法武器，则允许加成
-    if right_hand ~= nil and right_hand == left_hand then
-        return get_weapon_level_config(right_hand)
-    end
-
-    -- 如果只握持一把双手武器（另一只手为空），也允许加成
-    if right_hand ~= nil and left_hand == nil then
-        if item_requires_both_hands(right_hand) then
-            return get_weapon_level_config(right_hand)
-        end
-        return nil
-    end
-    if left_hand ~= nil and right_hand == nil then
-        if item_requires_both_hands(left_hand) then
-            return get_weapon_level_config(left_hand)
-        end
-        return nil
-    end
-
-    -- 如果左右手是不同的武器，则两把都必须是魔法武器
     local right_config = get_weapon_level_config(right_hand)
     local left_config = get_weapon_level_config(left_hand)
-    if right_config == nil or left_config == nil then
+
+    if (right_hand ~= nil and right_config == nil)
+            or (left_hand ~= nil and left_config == nil) then
         return nil
     end
 
-    -- 当双持不同等级的魔法武器时，取较低档的配置作为加成基准，避免穿插高低档造成过高收益
-    if right_config.max_bonus <= left_config.max_bonus then
-        return right_config
-    end
+    if right_config == nil then return left_config end
+    if left_config == nil then return right_config end
 
-    return left_config
+    return (right_config.max_bonus <= left_config.max_bonus) and right_config or left_config
 end
 
-local function safe_get_attack_result_field(attackResult, field_name)
-    -- 某些版本的 Lua 绑定不会暴露 AttackResult.Attacker，直接访问会抛错
-    -- 用 pcall 保护字段读取，避免脚本报错导致全局 Hook 中断
-    local ok, value = pcall(function()
-        return attackResult[field_name]
-    end)
-    if not ok then
-        return nil
-    end
-    return value
-end
-
-local function resolve_attacker_from_source(source)
-    -- 尝试从不同类型的对象中解析出 Character
-    if source == nil then
-        return nil
-    end
-
-    if source.Character ~= nil then
-        return source.Character
-    end
-
-    if source.Inventory ~= nil and source.Inventory.Owner ~= nil then
-        return source.Inventory.Owner
-    end
-
-    return source
-end
-
-local function safe_get_prefab_field(item, field_name)
-    if item == nil or item.Prefab == nil then
-        return nil
-    end
-
-    local ok, value = pcall(function()
-        return item.Prefab[field_name]
-    end)
-    if not ok then
-        return nil
-    end
-    return value
-end
-
-local function item_requires_both_hands(item)
-    -- 不同版本可能使用不同字段名，这里做兼容读取
-    local requires = safe_get_prefab_field(item, "RequiresBothHands")
-    if requires ~= nil then
-        return requires
-    end
-
-    requires = safe_get_prefab_field(item, "RequireBothHands")
-    if requires ~= nil then
-        return requires
-    end
-
-    requires = safe_get_prefab_field(item, "TwoHanded")
-    if requires ~= nil then
-        return requires
-    end
-
-    return false
-end
-
-local function get_attacker_character(attackResult)
-    -- 尝试读取不同版本可能暴露的字段，优先使用 Attacker
-    if attackResult == nil then
-        return nil
-    end
-
-    local attacker = safe_get_attack_result_field(attackResult, "Attacker")
-    if attacker == nil then
-        attacker = safe_get_attack_result_field(attackResult, "AttackerEntity")
-    end
-    if attacker == nil then
-        attacker = safe_get_attack_result_field(attackResult, "Source")
-    end
-    if attacker ~= nil then
-        return resolve_attacker_from_source(attacker)
-    end
-
-    -- 进一步尝试通过 Attack 对象获取攻击者
-    local attack = safe_get_attack_result_field(attackResult, "Attack")
-    if attack ~= nil then
-        local attack_attacker = safe_get_attack_result_field(attack, "Attacker")
-        if attack_attacker == nil then
-            attack_attacker = safe_get_attack_result_field(attack, "AttackerEntity")
-        end
-        if attack_attacker == nil then
-            attack_attacker = safe_get_attack_result_field(attack, "Source")
-        end
-        if attack_attacker ~= nil then
-            return resolve_attacker_from_source(attack_attacker)
-        end
-    end
-
-    if DEBUG_LOG then
-        print("Touhou.MagicWeaponBonus: attacker is nil, skip bonus.")
-    end
-
-    return nil
-end
-
-local function scale_attack_result(attackResult, bonus)
-    -- 直接修改本次攻击的 affliction 强度，实现即时伤害加成
-    if attackResult == nil or attackResult.Afflictions == nil then
-        return
-    end
-
-    local multiplier = 1 + bonus
-    for affliction in attackResult.Afflictions do
-        if affliction.Strength ~= nil then
-            affliction.Strength = affliction.Strength * multiplier
-        end
-    end
-end
-
-Hook.Add("character.applyDamage", "Touhou.MagicWeaponBonus", function(characterHealth, attackResult, hitLimb)
-    -- 命中结算时调整伤害：无需依赖 Affliction 持续时间
-    if characterHealth == nil or attackResult == nil or hitLimb == nil then
-        return
-    end
-
-    local attacker_character = get_attacker_character(attackResult)
+local function get_magic_weapon_bonus(attacker_character, attack)
     if attacker_character == nil or attacker_character.IsDead or attacker_character.Removed then
-        return
+        return 0
     end
 
-    -- 限制魔法能力上限，避免无限成长
     local skill = attacker_character.GetSkillLevel(Identifier(MAGIC_SKILL)) or 0
     if skill <= 0 then
-        return
+        return 0
     end
 
     skill = math.min(skill, MAX_MAGIC_SKILL)
 
-    -- 必须满足双手都为魔法武器（或双手握持同一把魔法武器）
-    local config = resolve_magic_weapon_config(attacker_character)
+    local config = resolve_magic_weapon_config(attacker_character, attack)
     if config == nil then
+        return 0
+    end
+
+    local curve_factor = get_skill_curve_factor(skill)
+    return config.max_bonus * curve_factor
+end
+
+local attack_damage_multiplier_overrides = setmetatable({}, { __mode = "k" })
+
+Hook.Patch("Barotrauma.Character", "ApplyAttack", function(instance, ptable)
+    local attacker = ptable["attacker"]
+    if attacker == nil then
+        if DEBUG_LOG then
+            print("Touhou.MagicWeaponBonus: attacker is nil, skip bonus.")
+        end
         return
     end
 
-    -- 计算加成（使用非线性曲线，并限制最大值）
-    local curve_factor = get_skill_curve_factor(skill)
-    local bonus = config.max_bonus * curve_factor
+    local attack = ptable["attack"]
+    local bonus = get_magic_weapon_bonus(attacker, attack)
     if bonus <= 0 then
         return
     end
 
-    scale_attack_result(attackResult, bonus)
-end)
+    if attack == nil then
+        if DEBUG_LOG then
+            print("Touhou.MagicWeaponBonus: attack is nil, skip bonus.")
+        end
+        return
+    end
+
+    if attack_damage_multiplier_overrides[attack] == nil then
+        attack_damage_multiplier_overrides[attack] = attack.DamageMultiplier
+    end
+    attack.DamageMultiplier = attack_damage_multiplier_overrides[attack] * (1 + bonus)
+end, Hook.HookMethodType.Before)
+
+Hook.Patch("Barotrauma.Character", "ApplyAttack", function(instance, ptable)
+    local attack = ptable["attack"]
+    if attack == nil then
+        return
+    end
+
+    local original_multiplier = attack_damage_multiplier_overrides[attack]
+    if original_multiplier ~= nil then
+        attack.DamageMultiplier = original_multiplier
+        attack_damage_multiplier_overrides[attack] = nil
+    end
+end, Hook.HookMethodType.After)
